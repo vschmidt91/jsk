@@ -1,6 +1,7 @@
 
-const _ = require('lodash')
-const jot = require('./jot')()
+// const _ = require('lodash')
+import * as _ from 'lodash'
+import { toJot, toSK } from './jot.mjs'
 
 const base =
 {
@@ -16,13 +17,13 @@ const base =
     //     {x: ['f', ['x', 'x']]}
     // ]},
 
-    Y: ['B', 'U', 'Z'],
-    U: ['S', 'I', 'I'],
-    Z: ['C', ['B', 'B', 'I'], 'U'],
+    // Y: ['B', 'U', 'Z'],
+    // U: ['S', 'I', 'I'],
+    // Z: ['C', ['B', 'B', 'I'], 'U'],
     
     /* BOOLEAN */
-    F: ['K', 'I'],
-    T: 'K',
+    // F: ['K', 'I'],
+    // T: 'K',
     and: {p: {q: ['p', 'q', 'F']}},
     or: {p: {q: ['p', 'T', 'q']}},
     not: 'C',
@@ -185,12 +186,15 @@ function compile(code)
                 code = 'I'
             else if(!contains(b, a))
                 code = ['K', b]
-            else if(Array.isArray(b) && !contains(b[0], a))
-                code = ['B', b[0], { [a]: b[1] }]
-            else if(Array.isArray(b) && !contains(b[1], a))
-                code = ['C', {[a]: b[0]}, b[1]]
             else if(Array.isArray(b))
-                code = ['S', {[a]: b[0]}, {[a]: b[1]}]
+            {
+                if(!contains(b[0], a))
+                    code = ['B', b[0], { [a]: b[1] }]
+                else if(!contains(b[1], a))
+                    code = ['C', {[a]: b[0]}, b[1]]
+                else
+                    code = ['S', {[a]: b[0]}, {[a]: b[1]}]
+            }
             else if(typeof b === 'object')
                 code = { [a]: compile({[arg(b)]: body(b)}) }
         }
@@ -233,9 +237,13 @@ function exec(code)
             switch(f)
             {
 
-                case 'U': code.unshift(copy(code[0])); break
-                case 'Y': code.splice(1, 0, ['Y', copy(code[0])]); break
-                // case 'F': code.shift(); break
+                // case 'U': code.unshift(copy(code[0])); break
+                // case 'Y': code.splice(1, 0, ['Y', copy(code[0])]); break
+                case 'U': code.unshift(code[0]); break
+                case 'Y': code.splice(1, 0, ['Y', code[0]]); break
+
+                case 'F': code.shift(); break
+                case 'T': code.splice(1, 1); break
 
                 case 'I': break
                 case 'B': code.splice(1, 0, code.splice(1, 2)); break
@@ -256,24 +264,24 @@ function run(src, args)
 {
     print(src)
     let bin = unfan(compile(src))
-    print(bin)
+    console.log(size(bin))
 
-    // let j = jot.toJot(bin)
+    // let j = toJot(bin)
     // let bytes = _(j)
     //     .chunk(8)
     //     .map(a => a.reduce((x, b) => 2 * x + b, 0))
     //     .value()
     // print(bytes)
-    // bin = jot.toSK(j)
+    // bin = toSK(j)
     // print(bin)
 
     let code = bin.concat(args)
     console.log(exec(code))
 }
 
-let start = process.hrtime()
+let label = 'jot'
+console.time(label)
 // run(numeral(4), [n => n + 1, 0])
-run(['fac', numeral(6)], [n => n + 1, 0])
-let duration = process.hrtime(start)
+run(['fac', numeral(7)], [n => n + 1, 0])
 
-console.log(duration + 's')
+console.timeEnd(label)
