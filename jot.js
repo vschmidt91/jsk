@@ -13,6 +13,8 @@ module.exports = () =>
         {
             switch(sk)
             {
+                case 'I':
+                    return [1, 1, 0, 1, 0]
                 case 'K':
                     return [1, 1, 1, 0, 0]
                 case 'S':
@@ -23,16 +25,34 @@ module.exports = () =>
 
     this.toSK = jot =>
     {
-        let x = jot.pop()
-        switch(x)
+        let x = []
+        let result = x
+        while(true)
         {
-            case undefined:
-                return ['S', 'K', 'K']
-            case 0:
-                return [this.toSK(jot), 'S', 'K']
-            case 1:
-                return ['S', ['K', this.toSK(jot)]]
+            switch(jot.pop())
+            {
+                case undefined:
+                    return result
+                case 0:
+                    x.push(x = [], 'S', 'K')
+                    break
+                case 1:
+                    x.push('S', ['K', x = []])
+                    break
+            }
         }
+
+        // let x = jot.pop()
+        // switch(x)
+        // {
+        //     case undefined:
+        //         return ['S', 'K', 'K']
+        //     case 0:
+        //         return [this.toSK(jot), 'S', 'K']
+        //     case 1:
+        //         return ['S', ['K', this.toSK(jot)]]
+        // }
+
     }
 
     return this
