@@ -1,41 +1,41 @@
 
-// const _ = require('lodash')
-import * as _ from 'lodash'
-
-const base =
+let base =
 {
 
     //uncomment to enable reductions
 
-    B: ['S', ['K', 'S'], 'K'],
-    C: ['S', ['S', ['K', 'B'], 'S'], ['K', 'K']],
-    // I: [['S', 'K'], 'K'],
+    // B: ['S', ['K', 'S'], 'K'],
+    // C: ['S', ['S', ['K', 'B'], 'S'], ['K', 'K']],
+    // I: ['S', 'K', 'K'],
 
-    // Y: {f: [
-    //     {x: ['f', ['x', 'x']]},
-    //     {x: ['f', ['x', 'x']]}
-    // ]},
+    Y: {
+        f: [
+            { x: ['f', ['x', 'x']] },
+            { x: ['f', ['x', 'x']] }
+        ]
+    },
 
-    Y: ['B', 'U', 'Z'],
-    U: ['S', 'I', 'I'],
-    Z: ['C', ['B', 'B', 'I'], 'U'],
-    
+    // Y: ['B', 'U', 'Z'],
+    // U: ['S', 'I', 'I'],
+    // Z: ['C', ['B', 'B', 'I'], 'U'],
+
     /* BOOLEAN */
     F: ['K', 'I'],
     T: 'K',
-    and: {p: {q: ['p', 'q', 'F']}},
-    or: {p: {q: ['p', 'T', 'q']}},
+
+    and: { p: { q: ['p', 'q', 'F'] } },
+    or: { p: { q: ['p', 'T', 'q'] } },
     not: 'C',
 
     /* PAIR */
-    pair: {x: {y: {z: ['z', 'x', 'y']}}},
-    first: {p: ['p', 'T']},
-    second: {p: ['p', 'F']},
+    pair: { x: { y: { z: ['z', 'x', 'y'] } } },
+    first: { p: ['p', 'T'] },
+    second: { p: ['p', 'F'] },
 
     /* LIST */
     nil: 'F',
     cons: 'pair',
-    isNil: {l: ['l', {h: {t: {d: 'F'}}}, 'T']},
+    isNil: { l: ['l', { h: { t: { d: 'F' } } }, 'T'] },
     head: 'first',
     tail: 'second',
 
@@ -43,29 +43,34 @@ const base =
     zero: 'F',
     one: 'I',
     two: ['succ', 'one'],
-    three: ['succ', 'two'],
 
     /* ARITHMETIC */
     succ: ['S', 'B'],
-    pred: {n: {f: {x: ['n', {g: {h: ['h', ['g', 'f']]}}, ['K', 'x'], 'I']}}},
-    isZero: {n: ['n', ['K', 'F'], 'T']},
+    pred: { n: { f: { x: ['n', { g: { h: ['h', ['g', 'f']] } }, ['K', 'x'], 'I'] } } },
+    isZero: { n: ['n', ['K', 'F'], 'T'] },
 
-    add: {m: {n: {f: {x: ['m', 'f', ['n', 'f', 'x']]}}}},
-    sub: {m: {n: ['n', 'pred', 'm']}},
+    add: { m: { n: { f: { x: ['m', 'f', ['n', 'f', 'x']] } } } },
+    sub: { m: { n: ['n', 'pred', 'm'] } },
     mul: 'B',
-    div1: {c: {n: {m: {f: {x: [{d: ['isZero', 'd', 'x', ['f', ['c', 'd', 'm', 'f', 'x']]]},['sub', 'n', 'm']]}}}}},
-    div: {n: ['Y', 'div1', ['succ', 'n']]},
+    div1: { c: { n: { m: { f: { x: [
+        { d: ['isZero', 'd', 'x', ['f', ['c', 'd', 'm', 'f', 'x']]] },
+        ['sub', 'n', 'm']
+    ] } } } } },
+    div: { n: ['Y', 'div1', ['succ', 'n']] },
 
-    leq: {m: {n: ['isZero', ['sub', 'm', 'n']]}},
-    geq: {m: {n: ['isZero', ['sub', 'n', 'm']]}},
-    eq: {m: {n: ['and', ['leq', 'm', 'n'], ['geq', 'm', 'n']]}},
-    fac: ['Y', {f: {n: ['isZero', 'n', 'one', ['mul', 'n', ['f', ['pred', 'n']]]]}}],
-    fib: ['Y', {f: {n:
-        ['isZero', ['pred', 'n'],
-            'n',
-            ['add', ['f', ['pred', 'n']], ['f', ['pred', ['pred', 'n']]]]
-        ]
-    }}]
+    leq: { m: { n: ['isZero', ['sub', 'm', 'n']] } },
+    geq: { m: { n: ['isZero', ['sub', 'n', 'm']] } },
+    eq: { m: { n: ['and', ['leq', 'm', 'n'], ['geq', 'm', 'n']] } },
+    fac: ['Y', { f: { n: ['isZero', 'n', 'one', ['mul', 'n', ['f', ['pred', 'n']]]] } }],
+    fib: ['Y', {
+        f: {
+            n: [
+                'leq', 'n', 'one', 'n', [
+                    'add', ['f', ['pred', 'n']], ['f', ['pred', ['pred', 'n']]]
+                ]
+            ]
+        }
+    }]
 }
 
 export function fibonacci(n)
@@ -76,212 +81,166 @@ export function fibonacci(n)
         return fibonacci(n - 1) + fibonacci(n - 2)
 }
 
-function arg(code)
-{
+function arg(code) {
     return Object.keys(code)[0]
 }
 
-function body(code)
-{
+function body(code) {
     return Object.values(code)[0]
 }
 
-function size(code)
-{
-    let result = 0
-    let queue = [code]
-    while((code = queue.pop()) != undefined)
-    {
-        if(Array.isArray(code))
-            queue.push(...code)
-        else
-            result++
+function size(code) {
+    if (Array.isArray(code)) {
+        return code.map(size).reduce((a, b) => a + b)
     }
-    return result
+    else {
+        return 1
+    }
 }
 
-function toString(code)
-{
-    if(Array.isArray(code))
-    {
+function toString(code) {
+    if (Array.isArray(code)) {
         return code.map(toString)
     }
-    else
-    {
+    else if (typeof code === 'function') {
         return code.toString()
+    }
+    else {
+        return code
     }
 }
 
-export function print(code)
-{
+export function print(code) {
     console.log(JSON.stringify(toString(code)))
 }
 
-export function numeral(n)
-{
-    switch(n)
-    {
+export function numeral(n) {
+    switch (n) {
         case 0: return 'zero'
         case 1: return 'one'
         case 2: return 'two'
-        case 3: return 'three'
+    }
+    if (n < 10) {
+        return ['succ', numeral(n - 1)]
     }
     let k = Math.floor(Math.sqrt(n))
     let r = n - k * k
-    switch(r)
-    {
-        case 0: return ['two', numeral(k)]
-        case 1: return ['succ', ['two', numeral(k)]]
-        case 2: return ['succ', ['succ', ['two', numeral(k)]]]
+    // switch(r)
+    // {
+    //     case 0: return ['two', numeral(k)]
+    //     case 1: return ['succ', ['two', numeral(k)]]
+    //     case 2: return ['succ', ['succ', ['two', numeral(k)]]]
+    // }
+    return ['add', ['two', numeral(k)], numeral(r)]
+}
+
+function contains(code, fragment) {
+    if (Array.isArray(code)) {
+        return code.some(c => contains(c, fragment))
     }
-    if(n < 10)
-        return ['succ', numeral(n - 1)]
-    else
-        return ['add', ['two', numeral(k)], numeral(r)]
-}
-
-function contains(code, fragment)
-{
-    let queue = [code]
-    while((code = queue.pop()) != undefined)
-    {
-        if(Array.isArray(code))
-            queue.push(...code)
-        else if(typeof code === 'object')
-            queue.push(body(code))
-        else if(code === fragment)
-            return true
+    else if (typeof code === 'object') {
+        return contains(body(code), fragment)
     }
-    return false
-}
-
-function fan(code)
-{
-    if(!Array.isArray(code))
-        return code
-    else if(code.length <= 2)
-        return code
-    else
-        return code.map(fan).reduce((b, t) => b ? [b, t] : t, null)
-}
-
-function unfan(code)
-{
-    if(!Array.isArray(code))
-        return code
-    else
-    {
-        while(Array.isArray(code[0]))
-            code = code[0].concat(code.slice(1).map(unfan))
-        return code
+    else {
+        return code === fragment
     }
 }
 
-export function compile(code)
-{
-    while(true)
-    {
-        if(code in base)
+export function fan(code) {
+    if (!Array.isArray(code)) {
+        return code
+    }
+    else if (code.length <= 2) {
+        return code
+    }
+    else {
+        return code.map(fan).reduce((a, b) => a ? [a, b] : b)
+    }
+}
+
+export function unfan(code) {
+    if (!Array.isArray(code)) {
+        return code
+    }
+    else {
+        while (Array.isArray(code[0])) {
+            code = code[0].concat(code.slice(1))
+        }
+        return code.map(unfan)
+    }
+}
+
+export function compile(code) {
+    while (true) {
+        if (code in base) {
             code = base[code]
-        else if(Array.isArray(code))
-            return fan(code).map(compile)
-        else if(typeof code === 'object')
-        {
+        }
+        else if (Array.isArray(code)) {
+            return code.map(compile)
+        }
+        else if (typeof code === 'object') {
             let a = arg(code)
             let b = fan(body(code))
-            if(a === b)
+            if (a === b) {
                 code = 'I'
-            else if(!contains(b, a))
-                code = ['K', b]
-            else if(Array.isArray(b))
-            {
-                if(!contains(b[0], a))
-                    code = ['B', b[0], { [a]: b[1] }]
-                else if(!contains(b[1], a))
-                    code = ['C', {[a]: b[0]}, b[1]]
-                else
-                    code = ['S', {[a]: b[0]}, {[a]: b[1]}]
             }
-            else if(typeof b === 'object')
-                code = { [a]: compile({[arg(b)]: body(b)}) }
+            else if (!contains(b, a)) {
+                code = ['K', b]
+            }
+            else if (Array.isArray(b)) {
+                if (!contains(b[0], a)) {
+                    code = ['B', b[0], { [a]: b[1] }]
+                }
+                else if (!contains(b[1], a)) {
+                    code = ['C', { [a]: b[0] }, b[1]]
+                }
+                else {
+                    code = ['S', { [a]: b[0] }, { [a]: b[1] }]
+                }
+            }
+            else if (typeof b === 'object') {
+                code = { [a]: compile(b) }
+            }
         }
-        else
+        else {
             return code
+        }
     }
 }
 
-function copy(code)
-{
-    return _.cloneDeep(code)
-}
-
-export function exec(code)
-{
-    while(Array.isArray(code))
-    {
-        let f = code.shift()
-        if(code.length === 0)
-        {
-            if(Array.isArray(f))
-            {
-                code.unshift(...f)
-            }
-            else
-            {
-                code.unshift(code = f)
-            }
+export function exec(code) {
+    while (Array.isArray(code)) {
+        let cmd = code.shift()
+        if (Array.isArray(cmd)) {
+            code.unshift(...cmd)
         }
-        else if(Array.isArray(f))
-            code.unshift(...f)
-        else if(typeof f === 'function')
-        {
-            let args = code.splice(0, f.length).map(exec)
-            let result = f.apply(code, args)
+        else if (code.length === 0) {
+            code.unshift(code = cmd)
+        }
+        else if (typeof cmd === 'function') {
+            let args = code.splice(0, cmd.length).map(exec)
+            let result = cmd.apply(code, args)
             code.unshift(result)
         }
-        else if(typeof f === 'string')
-        {
-            switch(f)
-            {
+        else if (typeof cmd === 'string') {
+            switch (cmd) {
 
-                // case 'U': code.unshift(copy(code[0])); break
-                // case 'Y': code.splice(1, 0, ['Y', copy(code[0])]); break
-                case 'U': code.unshift(code[0]); break
-                case 'Y': code.splice(1, 0, ['Y', code[0]]); break
+                // case 'U': code.unshift(code[0]); break
+                // case 'Y': code.splice(1, 0, ['Y', code[0]]); break
 
-                case 'F': code.shift(); break
-                case 'T': code.splice(1, 1); break
+                // case 'F': code.shift(); break
+                // case 'T': code.splice(1, 1); break
 
+                case 'S': code.splice(2, 0, [...code.splice(1, 1), code[1]]); break
+                case 'K': code.splice(1, 1); break
                 case 'I': break
                 case 'B': code.splice(1, 0, code.splice(1, 2)); break
-                case 'C': code.splice(2, 0, code.splice(1, 1)[0]); break
+                case 'C': code.splice(2, 0, ...code.splice(1, 1)); break
 
-                case 'K': code.splice(1, 1); break
-                case 'S': code.splice(2, 0, [code.splice(1, 1)[0], code[1]]); break
-
-                default: throw f
+                default: throw new Error('invalid instruction: ' + cmd)
 
             }
         }
     }
     return code
-}
-
-export function run(src, args)
-{
-    print(src)
-    let bin = unfan(compile(src))
-    console.log(size(bin))
-
-    // let j = toJot(bin)
-    // let bytes = _(j)
-    //     .chunk(8)
-    //     .map(a => a.reduce((x, b) => 2 * x + b, 0))
-    //     .value()
-    // print(bytes)
-    // bin = toSK(j)
-    // print(bin)
-
-    let code = bin.concat(args)
-    console.log(exec(code))
 }
