@@ -4,9 +4,9 @@ let base =
 
     //uncomment to enable reductions
 
-    // B: ['S', ['K', 'S'], 'K'],
-    // C: ['S', ['S', ['K', 'B'], 'S'], ['K', 'K']],
-    // I: ['S', 'K', 'K'],
+    B: ['S', ['K', 'S'], 'K'],
+    C: ['S', ['S', ['K', 'B'], 'S'], ['K', 'K']],
+    I: ['S', 'K', 'K'],
 
     Y: {
         f: [

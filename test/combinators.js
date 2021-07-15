@@ -16,7 +16,7 @@ describe('app', function()
         });
         it('should correctly fibonacci recursion', function()
         {
-            for(var i = 0; i < 10; ++i)
+            for(var i = 0; i < 5; ++i)
             {
                 let code = compile(['fib', numeral(i), n => n + 1, 0])
                 deepStrictEqual(exec(code), fibonacci(i), 'incorrectly evaluated fibonacci(' + i.toString() + ')')

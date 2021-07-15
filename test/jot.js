@@ -30,7 +30,7 @@ describe('jot', function()
         });
         it('should correctly convert Fibonacci recursion', function()
         {
-            for(var i = 0; i < 10; ++i)
+            for(var i = 0; i < 5; ++i)
             {
                 let code = compile(['fib', numeral(i)])
                 code = JotToSKI(SKIToJot(code))
