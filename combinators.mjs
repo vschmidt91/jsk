@@ -1,17 +1,20 @@
-
-let base =
-{
+let base = {
 
     //uncomment to enable reductions
 
     B: ['S', ['K', 'S'], 'K'],
-    C: ['S', ['S', ['K', 'B'], 'S'], ['K', 'K']],
+    C: ['S', ['S', ['K', 'B'], 'S'],
+        ['K', 'K']
+    ],
     I: ['S', 'K', 'K'],
 
     Y: {
-        f: [
-            { x: ['f', ['x', 'x']] },
-            { x: ['f', ['x', 'x']] }
+        f: [{
+                x: ['f', ['x', 'x']]
+            },
+            {
+                x: ['f', ['x', 'x']]
+            }
         ]
     },
 
@@ -23,19 +26,45 @@ let base =
     F: ['K', 'I'],
     T: 'K',
 
-    and: { p: { q: ['p', 'q', 'F'] } },
-    or: { p: { q: ['p', 'T', 'q'] } },
+    and: {
+        p: {
+            q: ['p', 'q', 'F']
+        }
+    },
+    or: {
+        p: {
+            q: ['p', 'T', 'q']
+        }
+    },
     not: 'C',
 
     /* PAIR */
-    pair: { x: { y: { z: ['z', 'x', 'y'] } } },
-    first: { p: ['p', 'T'] },
-    second: { p: ['p', 'F'] },
+    pair: {
+        x: {
+            y: {
+                z: ['z', 'x', 'y']
+            }
+        }
+    },
+    first: {
+        p: ['p', 'T']
+    },
+    second: {
+        p: ['p', 'F']
+    },
 
     /* LIST */
     nil: 'F',
     cons: 'pair',
-    isNil: { l: ['l', { h: { t: { d: 'F' } } }, 'T'] },
+    isNil: {
+        l: ['l', {
+            h: {
+                t: {
+                    d: 'F'
+                }
+            }
+        }, 'T']
+    },
     head: 'first',
     tail: 'second',
 
@@ -46,39 +75,97 @@ let base =
 
     /* ARITHMETIC */
     succ: ['S', 'B'],
-    pred: { n: { f: { x: ['n', { g: { h: ['h', ['g', 'f']] } }, ['K', 'x'], 'I'] } } },
-    isZero: { n: ['n', ['K', 'F'], 'T'] },
+    pred: {
+        n: {
+            f: {
+                x: ['n', {
+                        g: {
+                            h: ['h', ['g', 'f']]
+                        }
+                    },
+                    ['K', 'x'], 'I'
+                ]
+            }
+        }
+    },
+    isZero: {
+        n: ['n', ['K', 'F'], 'T']
+    },
 
-    add: { m: { n: { f: { x: ['m', 'f', ['n', 'f', 'x']] } } } },
-    sub: { m: { n: ['n', 'pred', 'm'] } },
+    add: {
+        m: {
+            n: {
+                f: {
+                    x: ['m', 'f', ['n', 'f', 'x']]
+                }
+            }
+        }
+    },
+    sub: {
+        m: {
+            n: ['n', 'pred', 'm']
+        }
+    },
     mul: 'B',
-    div1: { c: { n: { m: { f: { x: [
-        { d: ['isZero', 'd', 'x', ['f', ['c', 'd', 'm', 'f', 'x']]] },
-        ['sub', 'n', 'm']
-    ] } } } } },
-    div: { n: ['Y', 'div1', ['succ', 'n']] },
+    div1: {
+        c: {
+            n: {
+                m: {
+                    f: {
+                        x: [{
+                                d: ['isZero', 'd', 'x', ['f', ['c', 'd', 'm', 'f', 'x']]]
+                            },
+                            ['sub', 'n', 'm']
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    div: {
+        n: ['Y', 'div1', ['succ', 'n']]
+    },
 
-    leq: { m: { n: ['isZero', ['sub', 'm', 'n']] } },
-    geq: { m: { n: ['isZero', ['sub', 'n', 'm']] } },
-    eq: { m: { n: ['and', ['leq', 'm', 'n'], ['geq', 'm', 'n']] } },
-    fac: ['Y', { f: { n: ['isZero', 'n', 'one', ['mul', 'n', ['f', ['pred', 'n']]]] } }],
+    leq: {
+        m: {
+            n: ['isZero', ['sub', 'm', 'n']]
+        }
+    },
+    geq: {
+        m: {
+            n: ['isZero', ['sub', 'n', 'm']]
+        }
+    },
+    eq: {
+        m: {
+            n: ['and', ['leq', 'm', 'n'],
+                ['geq', 'm', 'n']
+            ]
+        }
+    },
+    fac: ['Y', {
+        f: {
+            n: ['isZero', 'n', 'one', ['mul', 'n', ['f', ['pred', 'n']]]]
+        }
+    }],
     fib: ['Y', {
         f: {
             n: [
                 'leq', 'n', 'one', 'n', [
-                    'add', ['f', ['pred', 'n']], ['f', ['pred', ['pred', 'n']]]
+                    'add', ['f', ['pred', 'n']],
+                    ['f', ['pred', ['pred', 'n']]]
                 ]
             ]
         }
     }]
 }
 
-export function fibonacci(n)
-{
-    if(n < 2)
+export function fibonacci(n) {
+    if (n < 2) {
         return n
-    else
+    } else {
         return fibonacci(n - 1) + fibonacci(n - 2)
+    }
 }
 
 function arg(code) {
@@ -92,8 +179,7 @@ function body(code) {
 function size(code) {
     if (Array.isArray(code)) {
         return code.map(size).reduce((a, b) => a + b)
-    }
-    else {
+    } else {
         return 1
     }
 }
@@ -101,11 +187,9 @@ function size(code) {
 function toString(code) {
     if (Array.isArray(code)) {
         return code.map(toString)
-    }
-    else if (typeof code === 'function') {
+    } else if (typeof code === 'function') {
         return code.toString()
-    }
-    else {
+    } else {
         return code
     }
 }
@@ -116,9 +200,12 @@ export function print(code) {
 
 export function numeral(n) {
     switch (n) {
-        case 0: return 'zero'
-        case 1: return 'one'
-        case 2: return 'two'
+        case 0:
+            return 'zero'
+        case 1:
+            return 'one'
+        case 2:
+            return 'two'
     }
     if (n < 10) {
         return ['succ', numeral(n - 1)]
@@ -137,11 +224,9 @@ export function numeral(n) {
 function contains(code, fragment) {
     if (Array.isArray(code)) {
         return code.some(c => contains(c, fragment))
-    }
-    else if (typeof code === 'object') {
+    } else if (typeof code === 'object') {
         return contains(body(code), fragment)
-    }
-    else {
+    } else {
         return code === fragment
     }
 }
@@ -149,11 +234,9 @@ function contains(code, fragment) {
 export function fan(code) {
     if (!Array.isArray(code)) {
         return code
-    }
-    else if (code.length <= 2) {
+    } else if (code.length <= 2) {
         return code
-    }
-    else {
+    } else {
         return code.map(fan).reduce((a, b) => a ? [a, b] : b)
     }
 }
@@ -161,8 +244,7 @@ export function fan(code) {
 export function unfan(code) {
     if (!Array.isArray(code)) {
         return code
-    }
-    else {
+    } else {
         while (Array.isArray(code[0])) {
             code = code[0].concat(code.slice(1))
         }
@@ -174,55 +256,56 @@ export function compile(code) {
     while (true) {
         if (code in base) {
             code = base[code]
-        }
-        else if (Array.isArray(code)) {
+        } else if (Array.isArray(code)) {
             return code.map(compile)
-        }
-        else if (typeof code === 'object') {
+        } else if (typeof code === 'object') {
             let a = arg(code)
             let b = fan(body(code))
             if (a === b) {
                 code = 'I'
-            }
-            else if (!contains(b, a)) {
+            } else if (!contains(b, a)) {
                 code = ['K', b]
-            }
-            else if (Array.isArray(b)) {
+            } else if (Array.isArray(b)) {
                 if (!contains(b[0], a)) {
-                    code = ['B', b[0], { [a]: b[1] }]
+                    code = ['B', b[0], {
+                        [a]: b[1]
+                    }]
+                } else if (!contains(b[1], a)) {
+                    code = ['C', {
+                        [a]: b[0]
+                    }, b[1]]
+                } else {
+                    code = ['S', {
+                        [a]: b[0]
+                    }, {
+                        [a]: b[1]
+                    }]
                 }
-                else if (!contains(b[1], a)) {
-                    code = ['C', { [a]: b[0] }, b[1]]
-                }
-                else {
-                    code = ['S', { [a]: b[0] }, { [a]: b[1] }]
+            } else if (typeof b === 'object') {
+                code = {
+                    [a]: compile(b)
                 }
             }
-            else if (typeof b === 'object') {
-                code = { [a]: compile(b) }
-            }
-        }
-        else {
+        } else {
             return code
         }
     }
 }
 
 export function exec(code) {
+    let fns = []
     while (Array.isArray(code)) {
         let cmd = code.shift()
         if (Array.isArray(cmd)) {
             code.unshift(...cmd)
-        }
-        else if (code.length === 0) {
+        } else if (code.length === 0) {
             code.unshift(code = cmd)
-        }
-        else if (typeof cmd === 'function') {
-            let args = code.splice(0, cmd.length).map(exec)
-            let result = cmd.apply(code, args)
-            code.unshift(result)
-        }
-        else if (typeof cmd === 'string') {
+        } else if (typeof cmd === 'function') {
+            // let args = code.splice(0, cmd.length).map(exec)
+            // let result = cmd.apply(code, args)
+            // code.unshift(result)
+            fns.unshift(cmd)
+        } else if (typeof cmd === 'string') {
             switch (cmd) {
 
                 // case 'U': code.unshift(code[0]); break
@@ -231,16 +314,30 @@ export function exec(code) {
                 // case 'F': code.shift(); break
                 // case 'T': code.splice(1, 1); break
 
-                case 'S': code.splice(2, 0, [...code.splice(1, 1), code[1]]); break
-                case 'K': code.splice(1, 1); break
-                case 'I': break
-                case 'B': code.splice(1, 0, code.splice(1, 2)); break
-                case 'C': code.splice(2, 0, ...code.splice(1, 1)); break
+                case 'S':
+                    code.splice(2, 0, [...code.splice(1, 1), code[1]]);
+                    break
+                case 'K':
+                    code.splice(1, 1);
+                    break
+                case 'I':
+                    break
+                case 'B':
+                    code.splice(1, 0, code.splice(1, 2));
+                    break
+                case 'C':
+                    code.splice(2, 0, ...code.splice(1, 1));
+                    break
 
-                default: throw new Error('invalid instruction: ' + cmd)
+                default:
+                    throw new Error('invalid instruction: ' + cmd)
 
             }
         }
+    }
+    for(const fn of fns)
+    {
+        code = fn.apply(code, [code])
     }
     return code
 }
